@@ -1,6 +1,7 @@
 import mysql.connector
 import csv
 import pandas as pd
+import os
 
 
 def mysql_connection_sismos():
@@ -54,21 +55,28 @@ def insert_csv_to_db(conn):
     cursor.close()
 
 
+def dataframe_to_csv(df, nombre_archivo):
+    df.to_csv(os.path.join('QueryResults', nombre_archivo), index=False)
+    print("Guardado realizado correctamente ✅")
+
+
 def query1(conn):
     cursor = conn.cursor()
     df = create_empty_df()
     cursor.execute(
-        "SELECT `Magnitud`, `Latitud`, `Longitud`, `Profundidad`, `Estatus`, `Fecha Hora`, `Fecha Hora UTC`, `Estado`, `Referencia Distancia`, `Referencia Direccion`, `Referencia Localidad` FROM sismos where magnitud >= 7.0")
+        "SELECT `Magnitud`, `Latitud`, `Longitud`, `Profundidad`, `Estatus`, `Fecha Hora`, `Fecha Hora UTC`, `Estado`, `Referencia Distancia`, `Referencia Direccion`, `Referencia Localidad` FROM sismos where magnitud >= 7.0 ORDER BY magnitud DESC;")
     resultados = cursor.fetchall()
     for row in resultados:
-        print(row)
-        pd.concat([df, create_one_row_df(row)], ignore_index=True)
-    print(df.head())
+        if df.empty:
+            df = create_one_row_df(row)
+        else:
+            df = pd.concat([df, create_one_row_df(row)], ignore_index=True)
+    dataframe_to_csv(df, 'query1.csv')
     cursor.close()
 
 
 conection = mysql_connection_sismos()
-# insert_csv_to_db(conection)
+insert_csv_to_db(conection)
 query1(conection)
 
 # Cerrar conexión
