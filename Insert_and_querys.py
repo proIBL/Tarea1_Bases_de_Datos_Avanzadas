@@ -102,7 +102,6 @@ def query3(conn):
         else:
             df = pd.concat([df, pd.DataFrame([row], columns=['Año', 'Cantidad de Sismos'])], ignore_index=True)
     dataframe_to_csv(df, 'query3.csv')
-    print("Guardado realizado correctamente ✅")
     cursor.close()
 
 
@@ -118,7 +117,21 @@ def query4(conn):
         else:
             df = pd.concat([df, pd.DataFrame([row], columns=['Estado', 'Cantidad de Sismos'])], ignore_index=True)
     dataframe_to_csv(df, 'query4.csv')
-    print("Guardado realizado correctamente ✅")
+    cursor.close()
+
+
+def query5(conn):
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Estado', 'Magnitud Promedio'])
+    cursor.execute(
+        "SELECT `estado`, AVG(`Magnitud`) AS `Magnitud Promedio` FROM sismos WHERE YEAR(`Fecha Hora UTC`) >= 2024 GROUP BY estado;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Estado', 'Magnitud Promedio'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Estado', 'Magnitud Promedio'])], ignore_index=True)
+    dataframe_to_csv(df, 'query5.csv')
     cursor.close()
 
 
@@ -128,6 +141,7 @@ connection = mysql_connection_sismos()
 # query2(connection)
 # query3(connection)
 # query4(connection)
+query5(connection)
 
 # Cerrar conexión
 connection.close()
