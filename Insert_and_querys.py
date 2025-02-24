@@ -74,6 +74,7 @@ def query1(conn):
     dataframe_to_csv(df, 'query1.csv')
     cursor.close()
 
+
 def query2(conn):
     cursor = conn.cursor()
     df = create_empty_df()
@@ -88,6 +89,7 @@ def query2(conn):
     dataframe_to_csv(df, 'query2.csv')
     cursor.close()
 
+
 def query3(conn):
     cursor = conn.cursor()
     df = pd.DataFrame(columns=['Año', 'Cantidad de Sismos'])
@@ -100,6 +102,23 @@ def query3(conn):
         else:
             df = pd.concat([df, pd.DataFrame([row], columns=['Año', 'Cantidad de Sismos'])], ignore_index=True)
     dataframe_to_csv(df, 'query3.csv')
+    print("Guardado realizado correctamente ✅")
+    cursor.close()
+
+
+def query4(conn):
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Estado', 'Cantidad de Sismos'])
+    cursor.execute(
+        "SELECT `Estado`, COUNT(*) AS `Cantidad de sismos` FROM sismos GROUP BY `Estado` HAVING COUNT(*) >= 1000;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Estado', 'Cantidad de Sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Estado', 'Cantidad de Sismos'])], ignore_index=True)
+    dataframe_to_csv(df, 'query4.csv')
+    print("Guardado realizado correctamente ✅")
     cursor.close()
 
 
@@ -107,7 +126,8 @@ connection = mysql_connection_sismos()
 # insert_csv_to_db('QueryResults/Sismos_Limpios.csv', connection)
 # query1(connection)
 # query2(connection)
-query3(connection)
+# query3(connection)
+query4(connection)
 
 # Cerrar conexión
 connection.close()
