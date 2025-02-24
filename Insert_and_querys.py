@@ -211,6 +211,98 @@ def query10(conn):
     cursor.close()
 
 
+def query11(conn):
+    pass
+
+
+def query12(conn):
+    pass
+
+
+def query13(conn):
+    pass
+
+
+def query14(conn):
+    pass
+
+
+def query15(conn):
+    pass
+
+
+def query16(conn):
+    pass
+
+
+def query17(conn):
+    pass
+
+
+def query18(conn):
+    pass
+
+
+def query19(conn):
+    pass
+
+
+def query20(conn):
+    pass
+
+
+def query21(conn):
+    pass
+
+
+def query22(conn):
+    pass
+
+
+def query23(conn):
+    pass
+
+
+def query24(conn):
+    pass
+
+
+def query25(conn):
+    pass
+
+
+def query26(conn):
+    pass
+
+
+def query27(conn):
+    pass
+
+
+def query28(conn):
+    pass
+
+
+def query29(conn):
+    pass
+
+
+def query30(conn):
+    pass
+
+
+def query31(conn):
+    pass
+
+
+def query32(conn):
+    pass
+
+
+def query33(conn):
+    pass
+
+
 connection = mysql_connection_sismos()
 # insert_csv_to_db('QueryResults/Sismos_Limpios.csv', connection)
 # query1(connection)
@@ -223,6 +315,8 @@ connection = mysql_connection_sismos()
 # query8(connection)
 # query9(connection)
 # query10(connection)
+query11(connection)
+
 
 # Cerrar conexión
 connection.close()
