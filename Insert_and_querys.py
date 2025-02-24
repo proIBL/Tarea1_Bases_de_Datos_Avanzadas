@@ -212,7 +212,19 @@ def query10(conn):
 
 
 def query11(conn):
-    pass
+    # El "centro" geografico de la cdmx está aprox en 19.3° N, 99.1° O
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Magnitud', 'Latitude', 'Longitude'])
+    cursor.execute(
+        "SELECT `Magnitud`, `Latitud`, `Longitud` FROM `sismos` WHERE ST_Distance_Sphere(POINT(`Longitud`, `Latitud`), POINT(-99.1, 19.3)) <= 100000 AND Magnitud IS NOT NULL;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Magnitud', 'Latitude', 'Longitude'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Magnitud', 'Latitude', 'Longitude'])], ignore_index=True)
+    dataframe_to_csv(df, 'query11.csv')
+    cursor.close()
 
 
 def query12(conn):
@@ -316,6 +328,28 @@ connection = mysql_connection_sismos()
 # query9(connection)
 # query10(connection)
 query11(connection)
+#query12(connection)
+#query13(connection)
+#query14(connection)
+#query15(connection)
+#query16(connection)
+#query17(connection)
+#query18(connection)
+#query19(connection)
+#query20(connection)
+#query21(connection)
+#query22(connection)
+#query23(connection)
+#query24(connection)
+#query25(connection)
+#query26(connection)
+#query27(connection)
+#query28(connection)
+#query29(connection)
+#query30(connection)
+#query31(connection)
+#query32(connection)
+#query33(connection)
 
 
 # Cerrar conexión
