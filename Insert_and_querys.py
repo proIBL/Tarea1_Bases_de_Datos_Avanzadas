@@ -2,6 +2,7 @@ import mysql.connector
 import csv
 import pandas as pd
 import os
+from datetime import timedelta
 
 
 def mysql_connection_sismos():
@@ -195,6 +196,21 @@ def query9(conn):
     cursor.close()
 
 
+def query10(conn):
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT `Fecha Hora UTC` FROM sismos where `magnitud` >= 6.0 ORDER BY `Fecha Hora UTC` DESC;")
+    resultados = cursor.fetchall()
+    fechas = [row[0] for row in resultados]
+    sumatory = timedelta(0)
+    for i in range(len(fechas) - 1):
+        sumatory += (fechas[i] - fechas[i + 1])
+    intervalo_promedio = sumatory / (len(fechas) - 1)
+    with open(os.path.join('QueryResults', 'query10.txt'), "w") as file:
+        file.write(f"Intervalo promedio entre sismos de magnitud mayor a 6.0: {intervalo_promedio}\n")
+    cursor.close()
+
+
 connection = mysql_connection_sismos()
 # insert_csv_to_db('QueryResults/Sismos_Limpios.csv', connection)
 # query1(connection)
@@ -205,7 +221,8 @@ connection = mysql_connection_sismos()
 # query6(connection)
 # query7(connection)
 # query8(connection)
-query9(connection)
+# query9(connection)
+query10(connection)
 
 # Cerrar conexión
 connection.close()
