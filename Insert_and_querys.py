@@ -180,6 +180,21 @@ def query8(conn):
     cursor.close()
 
 
+def query9(conn):
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Década', 'Magnitud Promedio'])
+    cursor.execute(
+        "SELECT FLOOR(YEAR(`Fecha Hora UTC`) / 10) * 10 AS `Década`, AVG(`Magnitud`) AS `Magnitud_Promedio` FROM sismos WHERE YEAR(`Fecha Hora UTC`) >= 1900 GROUP BY `Década` ORDER BY `Década`;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Década', 'Magnitud Promedio'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Década', 'Magnitud Promedio'])], ignore_index=True)
+    dataframe_to_csv(df, 'query9.csv')
+    cursor.close()
+
+
 connection = mysql_connection_sismos()
 # insert_csv_to_db('QueryResults/Sismos_Limpios.csv', connection)
 # query1(connection)
@@ -189,7 +204,8 @@ connection = mysql_connection_sismos()
 # query5(connection)
 # query6(connection)
 # query7(connection)
-query8(connection)
+# query8(connection)
+query9(connection)
 
 # Cerrar conexión
 connection.close()
