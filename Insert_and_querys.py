@@ -139,7 +139,7 @@ def query6(conn):
     cursor = conn.cursor()
     df = pd.DataFrame(columns=['Número de Mes', 'Cantidad de Sismos'])
     cursor.execute(
-        "SELECT MONTH(`Fecha Hora UTC`) AS `Mes`, COUNT(*) AS `Cantidad de sismos` FROM sismos WHERE YEAR(`Fecha Hora UTC`) = 2024 GROUP BY `Mes` ORDER BY `Mes` ASC;")
+        "SELECT MONTH(`Fecha Hora UTC`) AS `Mes`, COUNT(*) AS `Cantidad de sismos` FROM sismos WHERE YEAR(`Fecha Hora UTC`) = 2024 GROUP BY `Mes`")
     resultados = cursor.fetchall()
     for row in resultados:
         if df.empty:
@@ -147,6 +147,21 @@ def query6(conn):
         else:
             df = pd.concat([df, pd.DataFrame([row], columns=['Número de Mes', 'Cantidad de Sismos'])], ignore_index=True)
     dataframe_to_csv(df, 'query6.csv')
+    cursor.close()
+
+
+def query7(conn):
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Año', 'Cantidad de Sismos'])
+    cursor.execute(
+        "SELECT YEAR(`Fecha Hora UTC`) AS `Año`, COUNT(*) AS `Cantidad de sismos` FROM sismos GROUP BY `Año` ORDER BY `Cantidad de sismos` DESC LIMIT 5;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Año', 'Cantidad de Sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Año', 'Cantidad de Sismos'])], ignore_index=True)
+    dataframe_to_csv(df, 'query7.csv')
     cursor.close()
 
 
@@ -158,6 +173,7 @@ connection = mysql_connection_sismos()
 # query4(connection)
 # query5(connection)
 # query6(connection)
+# query7(connection)
 
 # Cerrar conexión
 connection.close()
