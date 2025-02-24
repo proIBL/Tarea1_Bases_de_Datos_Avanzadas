@@ -88,11 +88,26 @@ def query2(conn):
     dataframe_to_csv(df, 'query2.csv')
     cursor.close()
 
+def query3(conn):
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Año', 'Cantidad de Sismos'])
+    cursor.execute(
+        "SELECT YEAR(`Fecha Hora UTC`) AS Año, COUNT(*) AS total FROM sismos WHERE YEAR(`Fecha Hora UTC`) > 2014 GROUP BY YEAR(`Fecha Hora UTC`);")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Año', 'Cantidad de Sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Año', 'Cantidad de Sismos'])], ignore_index=True)
+    dataframe_to_csv(df, 'query3.csv')
+    cursor.close()
 
-conection = mysql_connection_sismos()
-# insert_csv_to_db('QueryResults/Sismos_Limpios.csv', conection)
-query1(conection)
-query2(conection)
+
+connection = mysql_connection_sismos()
+# insert_csv_to_db('QueryResults/Sismos_Limpios.csv', connection)
+# query1(connection)
+# query2(connection)
+query3(connection)
 
 # Cerrar conexión
-conection.close()
+connection.close()
