@@ -228,7 +228,18 @@ def query11(conn):
 
 
 def query12(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Estado', 'Cantidad de sismos'])
+    cursor.execute(
+        "SELECT `Estado`, COUNT(*) AS `Cantidad de sismos` FROM `sismos` WHERE `Profundidad` >= 100 AND YEAR(`Fecha Hora UTC`) >= 2020 GROUP BY `Estado`;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Estado', 'Cantidad de sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Estado', 'Cantidad de sismos'])], ignore_index=True)
+    dataframe_to_csv(df, 'query12.csv')
+    cursor.close()
 
 
 def query13(conn):
@@ -327,29 +338,29 @@ connection = mysql_connection_sismos()
 # query8(connection)
 # query9(connection)
 # query10(connection)
-query11(connection)
-#query12(connection)
-#query13(connection)
-#query14(connection)
-#query15(connection)
-#query16(connection)
-#query17(connection)
-#query18(connection)
-#query19(connection)
-#query20(connection)
-#query21(connection)
-#query22(connection)
-#query23(connection)
-#query24(connection)
-#query25(connection)
-#query26(connection)
-#query27(connection)
-#query28(connection)
-#query29(connection)
-#query30(connection)
-#query31(connection)
-#query32(connection)
-#query33(connection)
+# query11(connection)
+query12(connection)
+# query13(connection)
+# query14(connection)
+# query15(connection)
+# query16(connection)
+# query17(connection)
+# query18(connection)
+# query19(connection)
+# query20(connection)
+# query21(connection)
+# query22(connection)
+# query23(connection)
+# query24(connection)
+# query25(connection)
+# query26(connection)
+# query27(connection)
+# query28(connection)
+# query29(connection)
+# query30(connection)
+# query31(connection)
+# query32(connection)
+# query33(connection)
 
 
 # Cerrar conexión
