@@ -25,7 +25,7 @@ def create_one_row_df(tupla):
                                           'Referencia Direccion', 'Referencia Localidad'])
 
 
-def insert_csv_to_db(conn):
+def insert_csv_to_db(route, conn):
     cursor = conn.cursor()
     BATCH_SIZE = 5000  # Ajusta según la capacidad de tu servidor
 
@@ -34,7 +34,7 @@ def insert_csv_to_db(conn):
     # Insertar datos
     query = """INSERT INTO `sismos` (`Magnitud`, `Latitud`, `Longitud`, `Profundidad`, `Estatus`, `Fecha Hora`, `Fecha Hora UTC`, `Estado`, `Referencia Distancia`, `Referencia Direccion`, `Referencia Localidad`) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-    with open(r"C:\Users\OMEN\Downloads\Sismos_Limpios.csv", "r", encoding="utf-8") as archivo:
+    with open(route, "r", encoding="utf-8") as archivo:
         lector = csv.reader(archivo)
         datos_lote = []
         for i, row in enumerate(lector, start=1):
@@ -74,10 +74,25 @@ def query1(conn):
     dataframe_to_csv(df, 'query1.csv')
     cursor.close()
 
+def query2(conn):
+    cursor = conn.cursor()
+    df = create_empty_df()
+    cursor.execute(
+        "SELECT Magnitud, Latitud, Longitud, Profundidad, Estatus, `Fecha Hora`, `Fecha Hora UTC`, Estado, `Referencia Distancia`, `Referencia Direccion`, `Referencia Localidad` FROM sismos WHERE Estado = 'OAX' ORDER BY `Fecha Hora UTC` DESC LIMIT 10;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = create_one_row_df(row)
+        else:
+            df = pd.concat([df, create_one_row_df(row)], ignore_index=True)
+    dataframe_to_csv(df, 'query2.csv')
+    cursor.close()
+
 
 conection = mysql_connection_sismos()
-insert_csv_to_db(conection)
+# insert_csv_to_db('QueryResults/Sismos_Limpios.csv', conection)
 query1(conection)
+query2(conection)
 
 # Cerrar conexión
 conection.close()
