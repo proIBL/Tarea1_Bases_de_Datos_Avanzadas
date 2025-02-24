@@ -127,7 +127,7 @@ connection = mysql_connection_sismos()
 # query1(connection)
 # query2(connection)
 # query3(connection)
-query4(connection)
+# query4(connection)
 
 # Cerrar conexión
 connection.close()
