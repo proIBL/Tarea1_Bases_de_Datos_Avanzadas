@@ -165,6 +165,21 @@ def query7(conn):
     cursor.close()
 
 
+def query8(conn):
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Periodo', 'Cantidad de Sismos'])
+    cursor.execute(
+        "SELECT CASE WHEN MONTH(`Fecha Hora UTC`) BETWEEN 1 AND 6 THEN 'Primera mitad' WHEN MONTH(`Fecha Hora UTC`) BETWEEN 7 AND 12 THEN 'Segunda mitad' END AS `Periodo`, COUNT(*) AS `Cantidad_de_sismos` FROM sismos WHERE YEAR(`Fecha Hora UTC`) = 2023 GROUP BY `Periodo` ORDER BY `Periodo`;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Periodo', 'Cantidad de Sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Periodo', 'Cantidad de Sismos'])], ignore_index=True)
+    dataframe_to_csv(df, 'query8.csv')
+    cursor.close()
+
+
 connection = mysql_connection_sismos()
 # insert_csv_to_db('QueryResults/Sismos_Limpios.csv', connection)
 # query1(connection)
@@ -174,6 +189,7 @@ connection = mysql_connection_sismos()
 # query5(connection)
 # query6(connection)
 # query7(connection)
+query8(connection)
 
 # Cerrar conexión
 connection.close()
