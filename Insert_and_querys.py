@@ -273,7 +273,19 @@ def query14(conn):
 
 
 def query15(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Estado', 'Cantidad de sismos'])
+    cursor.execute(
+        "SELECT `Estado`, COUNT(*) AS `Cantidad de Sismos` FROM `Sismos` WHERE Estado IN ('JAL', 'BCS', 'SIN', 'GRO', 'CHIS', 'MICH', 'OAX', 'BC', 'VER', 'SON', 'COL', 'NAY', 'TAB', 'CAMP', 'QR', 'TAMS', 'YUC') AND Profundidad >= 50 GROUP BY `Estado`;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Estado', 'Cantidad de sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Estado', 'Cantidad de sismos'])],
+                           ignore_index=True)
+    dataframe_to_csv(df, 'query15.csv')
+    cursor.close()
 
 
 def query16(conn):
@@ -363,7 +375,7 @@ connection = mysql_connection_sismos()
 # query11(connection)
 # query12(connection)
 # query13(connection)
-query14(connection)
+# query14(connection)
 # query15(connection)
 # query16(connection)
 # query17(connection)
