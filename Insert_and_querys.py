@@ -454,22 +454,6 @@ def query25(conn):
     cursor.close()
 
 
-def query26(conn):
-    pass
-
-
-def query27(conn):
-    pass
-
-
-def query28(conn):
-    pass
-
-
-def query29(conn):
-    pass
-
-
 connection = mysql_connection_sismos()
 # insert_csv_to_db('QueryResults/Sismos_Limpios.csv', connection)
 # query1(connection)
@@ -497,14 +481,6 @@ connection = mysql_connection_sismos()
 # query23(connection)
 # query24(connection)
 # query25(connection)
-# query26(connection)
-# query27(connection)
-# query28(connection)
-# query29(connection)
-# query30(connection)
-# query31(connection)
-# query32(connection)
-# query33(connection)
 
 
 # Cerrar conexión
