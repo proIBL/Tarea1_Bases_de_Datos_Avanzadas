@@ -440,7 +440,18 @@ def query24(conn):
 
 
 def query25(conn):
-    pass
+    cursor = conn.cursor()
+    df = create_empty_df()
+    cursor.execute(
+        "SELECT `Magnitud`, `Latitud`, `Longitud`, `Profundidad`, `Estatus`, `Fecha Hora`, `Fecha Hora UTC`, `Estado`, `Referencia Distancia`, `Referencia Direccion`, `Referencia Localidad` FROM Sismos WHERE Magnitud >= 7 UNION SELECT s2.`Magnitud`, s2.`Latitud`, s2.`Longitud`, s2.`Profundidad`, s2.`Estatus`, s2.`Fecha Hora`, s2.`Fecha Hora UTC`, s2.`Estado`, s2.`Referencia Distancia`, s2.`Referencia Direccion`, s2.`Referencia Localidad` FROM sismos s2 JOIN sismos s1 ON DATE(s2.`Fecha Hora UTC`) = DATE(s1.`Fecha Hora UTC`) + INTERVAL 1 DAY WHERE s1.Magnitud >= 7 AND s2.Magnitud < 7;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = create_one_row_df(row)
+        else:
+            df = pd.concat([df, create_one_row_df(row)], ignore_index=True)
+    dataframe_to_csv(df, 'query25.csv')
+    cursor.close()
 
 
 def query26(conn):
@@ -456,22 +467,6 @@ def query28(conn):
 
 
 def query29(conn):
-    pass
-
-
-def query30(conn):
-    pass
-
-
-def query31(conn):
-    pass
-
-
-def query32(conn):
-    pass
-
-
-def query33(conn):
     pass
 
 
@@ -500,7 +495,7 @@ connection = mysql_connection_sismos()
 # query21(connection)
 # query22(connection)
 # query23(connection)
-query24(connection)
+# query24(connection)
 # query25(connection)
 # query26(connection)
 # query27(connection)
