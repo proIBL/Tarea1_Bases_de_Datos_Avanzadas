@@ -408,7 +408,6 @@ def query22(conn):
 
 def query23(conn):
     cursor = conn.cursor()
-    df = pd.DataFrame(columns=['Magnitud', 'Profundidad', 'Estado'])
     cursor.execute(
         "SELECT `Magnitud`, `Profundidad`, `Estado` FROM `Sismos` WHERE `Magnitud` IS NOT NULL AND `Profundidad` IS NOT NULL;")
     resultados = cursor.fetchall()
@@ -422,7 +421,22 @@ def query23(conn):
 
 
 def query24(conn):
-    pass
+    """
+    Segun Google un sismo así es de 6.5 o mayor y con una profundidad menor a 70km,
+    además de ocurrir en el mar, por lo que tomamos estados costeros
+    """
+    cursor = conn.cursor()
+    df = create_empty_df()
+    cursor.execute(
+        "SELECT `Magnitud`, `Latitud`, `Longitud`, `Profundidad`, `Estatus`, `Fecha Hora`, `Fecha Hora UTC`, `Estado`, `Referencia Distancia`, `Referencia Direccion`, `Referencia Localidad` FROM `Sismos` WHERE `Magnitud` >= 6.5 AND `Profundidad` <= 70 AND Estado IN ('JAL', 'BCS', 'SIN', 'GRO', 'CHIS', 'MICH', 'OAX', 'BC', 'VER', 'SON', 'COL', 'NAY', 'TAB', 'CAMP', 'QR', 'TAMS', 'YUC');")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = create_one_row_df(row)
+        else:
+            df = pd.concat([df, create_one_row_df(row)], ignore_index=True)
+    dataframe_to_csv(df, 'query24.csv')
+    cursor.close()
 
 
 def query25(conn):
@@ -486,7 +500,7 @@ connection = mysql_connection_sismos()
 # query21(connection)
 # query22(connection)
 # query23(connection)
-# query24(connection)
+query24(connection)
 # query25(connection)
 # query26(connection)
 # query27(connection)
