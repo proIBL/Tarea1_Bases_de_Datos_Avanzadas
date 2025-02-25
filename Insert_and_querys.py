@@ -258,7 +258,18 @@ def query13(conn):
 
 
 def query14(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Grupo de Profundidad por Km', 'Cantidad de sismos'])
+    cursor.execute(
+        "SELECT FLOOR(`Profundidad` / 10) * 10 AS `Grupo Profundidad`, COUNT(*) AS `Cantidad de Sismos` FROM Sismos GROUP BY `Grupo Profundidad` ORDER BY `Grupo Profundidad`;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Grupo de Profundidad por Km', 'Cantidad de sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Grupo de Profundidad por Km', 'Cantidad de sismos'])], ignore_index=True)
+    dataframe_to_csv(df, 'query14.csv')
+    cursor.close()
 
 
 def query15(conn):
