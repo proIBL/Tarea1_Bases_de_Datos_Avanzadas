@@ -289,7 +289,19 @@ def query15(conn):
 
 
 def query16(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Año', 'Desviación Estandar'])
+    cursor.execute(
+        "SELECT YEAR(`Fecha Hora UTC`) AS Año, STDDEV_POP(Magnitud) AS `Desviacion Estandar` FROM Sismos WHERE YEAR(`Fecha Hora UTC`) >= 2015 GROUP BY YEAR(`Fecha Hora UTC`) ORDER BY Año;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Año', 'Desviación Estandar'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Año', 'Desviación Estandar'])],
+                           ignore_index=True)
+    dataframe_to_csv(df, 'query16.csv')
+    cursor.close()
 
 
 def query17(conn):
@@ -377,7 +389,7 @@ connection = mysql_connection_sismos()
 # query13(connection)
 # query14(connection)
 # query15(connection)
-# query16(connection)
+query16(connection)
 # query17(connection)
 # query18(connection)
 # query19(connection)
