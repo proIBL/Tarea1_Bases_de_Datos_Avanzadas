@@ -327,7 +327,19 @@ def query17(conn):
 
 
 def query18(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Grupo de Magnitud', 'Cantidad de sismos'])
+    cursor.execute(
+        "SELECT FLOOR(`Magnitud` / 0.5) * 0.5 AS `Grupo Magnitud`, COUNT(*) AS `Cantidad de Sismos` FROM Sismos WHERE `Magnitud` IS NOT NULL GROUP BY `Grupo Magnitud` ORDER BY `Grupo Magnitud`;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Grupo de Magnitud', 'Cantidad de sismos'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Grupo de Magnitud', 'Cantidad de sismos'])],
+                           ignore_index=True)
+    dataframe_to_csv(df, 'query18.csv')
+    cursor.close()
 
 
 def query19(conn):
@@ -408,8 +420,8 @@ connection = mysql_connection_sismos()
 # query14(connection)
 # query15(connection)
 # query16(connection)
-query17(connection)
-# query18(connection)
+# query17(connection)
+query18(connection)
 # query19(connection)
 # query20(connection)
 # query21(connection)
