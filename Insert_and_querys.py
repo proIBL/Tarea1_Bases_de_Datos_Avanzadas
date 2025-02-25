@@ -3,7 +3,7 @@ import csv
 import pandas as pd
 import os
 from datetime import timedelta
-
+import numpy as np
 
 def mysql_connection_sismos():
     return mysql.connector.connect(
@@ -305,7 +305,25 @@ def query16(conn):
 
 
 def query17(conn):
-    pass
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT `Magnitud` FROM `Sismos` WHERE `Magnitud` IS NOT NULL;")
+    resultados = cursor.fetchall()
+    Lista_Magnitudes = []
+    for row in resultados:
+        Lista_Magnitudes.append(float(row[0]))
+    datos = np.array(Lista_Magnitudes)
+    Q1 = np.percentile(datos, 25)
+    Q3 = np.percentile(datos, 75)
+    IQR = Q3 - Q1
+    limite_inferior = Q1 - 1.5 * IQR
+    limite_superior = Q3 + 1.5 * IQR
+    valores_atipicos = datos[(datos < limite_inferior) | (datos > limite_superior)].tolist()
+    conteo = pd.Series(valores_atipicos).value_counts().reset_index()
+    conteo.columns = ['Magnitud', 'Frecuencia del valor atípico']
+    conteo = conteo.sort_values(by='Magnitud')
+    dataframe_to_csv(conteo, 'query17.csv')
+    cursor.close()
 
 
 def query18(conn):
@@ -389,8 +407,8 @@ connection = mysql_connection_sismos()
 # query13(connection)
 # query14(connection)
 # query15(connection)
-query16(connection)
-# query17(connection)
+# query16(connection)
+query17(connection)
 # query18(connection)
 # query19(connection)
 # query20(connection)
