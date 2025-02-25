@@ -359,7 +359,19 @@ def query19(conn):
 
 
 def query20(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Estado', 'P25', 'P50', 'P75'])
+    cursor.execute(
+        "WITH cte AS ( SELECT Estado, magnitud, NTILE(100) OVER (PARTITION BY Estado ORDER BY magnitud) AS percentil FROM Sismos ) SELECT Estado, COALESCE(MAX(CASE WHEN percentil = 25 THEN magnitud END), '') AS p25, COALESCE(MAX(CASE WHEN percentil = 50 THEN magnitud END), '') AS p50, COALESCE(MAX(CASE WHEN percentil = 75 THEN magnitud END), '') AS p75 FROM cte GROUP BY Estado;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Estado', 'P25', 'P50', 'P75'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Estado', 'P25', 'P50', 'P75'])],
+                           ignore_index=True)
+    dataframe_to_csv(df, 'query20.csv')
+    cursor.close()
 
 
 def query21(conn):
