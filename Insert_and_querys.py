@@ -343,7 +343,19 @@ def query18(conn):
 
 
 def query19(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Estado', 'Mediana'])
+    cursor.execute(
+        "SELECT estado, AVG(profundidad) AS mediana_profundidad FROM ( SELECT estado, profundidad, ROW_NUMBER() OVER (PARTITION BY estado ORDER BY profundidad) AS rn, COUNT(*) OVER (PARTITION BY estado) AS total FROM Sismos ) t WHERE rn IN (FLOOR((total + 1) / 2), CEIL((total + 1) / 2)) GROUP BY estado;")
+    resultados = cursor.fetchall()
+    for row in resultados:
+        if df.empty:
+            df = pd.DataFrame([row], columns=['Estado', 'Mediana'])
+        else:
+            df = pd.concat([df, pd.DataFrame([row], columns=['Estado', 'Mediana'])],
+                           ignore_index=True)
+    dataframe_to_csv(df, 'query19.csv')
+    cursor.close()
 
 
 def query20(conn):
@@ -421,9 +433,9 @@ connection = mysql_connection_sismos()
 # query15(connection)
 # query16(connection)
 # query17(connection)
-query18(connection)
+# query18(connection)
 # query19(connection)
-# query20(connection)
+query20(connection)
 # query21(connection)
 # query22(connection)
 # query23(connection)
