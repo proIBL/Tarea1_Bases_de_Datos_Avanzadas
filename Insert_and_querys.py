@@ -407,7 +407,18 @@ def query22(conn):
 
 
 def query23(conn):
-    pass
+    cursor = conn.cursor()
+    df = pd.DataFrame(columns=['Magnitud', 'Profundidad', 'Estado'])
+    cursor.execute(
+        "SELECT `Magnitud`, `Profundidad`, `Estado` FROM `Sismos` WHERE `Magnitud` IS NOT NULL AND `Profundidad` IS NOT NULL;")
+    resultados = cursor.fetchall()
+    df = pd.DataFrame(resultados, columns=['Magnitud', 'Profundidad', 'Estado'])
+    df[['Magnitud', 'Profundidad']] = df[['Magnitud', 'Profundidad']].astype(float)
+    correlaciones = df.groupby('Estado')[['Magnitud', 'Profundidad']].corr().iloc[0::2, -1].reset_index()
+    correlaciones = correlaciones[['Estado', 'Profundidad']].rename(columns={'Profundidad': 'Correlacion'})
+
+    dataframe_to_csv(correlaciones, 'query23.csv')
+    cursor.close()
 
 
 def query24(conn):
@@ -473,7 +484,7 @@ connection = mysql_connection_sismos()
 # query19(connection)
 # query20(connection)
 # query21(connection)
-query22(connection)
+# query22(connection)
 # query23(connection)
 # query24(connection)
 # query25(connection)
